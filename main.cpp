@@ -15,6 +15,7 @@ float gTimeAccumulator = 0.0f;
 
 
 Player* gPlayer = nullptr;
+Weapon* gWeapon = nullptr;
 //Camera2D gCamera = {};
 
 void initialize() {
@@ -22,14 +23,22 @@ void initialize() {
     SetTargetFPS(FPS);
     gPlayer = new Player(
            {500.0f, 400.0f},
-           {48.0f, 64.0f},
-           "assets/protag.png",
-           {4, 8}
+           {80.0f, 80.0f},
+           "assets/player.png",
+           {8, 8}
        );
+    Weapon* fireSword = new Weapon(
+    "Fire Sword",
+    25.0f,
+    "assets/fireSword.png",
+    "assets/fireSword.png"
+);
+    gPlayer->equipWeapon(fireSword);
 }
 
 void processInput() {
     if (IsKeyPressed(KEY_Q)) gAppStatus = TERMINATED;
+    gPlayer->handleAttack();
 }
 
 void update() {

@@ -17,6 +17,11 @@
 enum AppStatus { TERMINATED, RUNNING };
 //enum TextureType { SINGLE, ATLAS };
 enum SceneID { NO_SCENE = -1, LEVEL_A, LEVEL_B, LEVEL_T, START, WIN, LOSE };
+enum Direction {UP, DOWN, LEFT, RIGHT};
+enum Status {ACTIVE, INACTIVE};
+
+static constexpr int DEFAULT_SPEED = 200;
+static constexpr int DEFAULT_FRAME_SPEED = 14;
 
 Color ColorFromHex(const char* hex);
 void Normalize(Vector2* vector);

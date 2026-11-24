@@ -16,6 +16,8 @@ add_executable(finalProject
         entities/Player.cpp
         items/Weapon.h
         items/Weapon.cpp
+        items/item.h
+        items/Item.cpp
 )
 
 target_include_directories(finalProject PRIVATE

@@ -17,14 +17,15 @@ public:
     );
     void update(float deltaTime) override;
     void handleMovement();
-
-    // void basicAttack();
+    void handleAttack();
+   // void render() override;
+    void basicAttack();
     // void useAbilityQ();
     // void useAbilityE();
     //
-    // void equipWeapon(Weapon* weapon);
+     void equipWeapon(Weapon* weapon);
     // void unequipWeapon();
-
+    ~Player();
     //void useConsumable(int itemID);
 
   //  Inventory& getInventory();

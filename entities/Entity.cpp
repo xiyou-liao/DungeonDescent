@@ -24,7 +24,8 @@ Entity::Entity(
     Vector2 scale,
     const char* textureFilepath,
     Vector2 spriteSheetDimensions,
-    const std::map<Direction, std::vector<int>>& animationAtlas
+    const std::map<Direction, std::vector<int>>& walkAnimationAtlas,
+    const std::map<Direction, std::vector<int>>& attackAnimationAtlas
 ) :
     mPosition{ position },
     mVelocity{ 0.0f, 0.0f },
@@ -34,17 +35,22 @@ Entity::Entity(
     mDirection{ RIGHT },
     mFrameSpeed{ DEFAULT_FRAME_SPEED },
     mSpeed{ DEFAULT_SPEED },
-    mAnimationAtlas{animationAtlas},
-    mAnimationIndices{animationAtlas.at(RIGHT)}
+    mWalkAnimationAtlas{walkAnimationAtlas},
+    mAttackAnimationAtlas{attackAnimationAtlas},
+    mAnimationIndices{walkAnimationAtlas.at(RIGHT)}
 {}
 
 Entity::~Entity() { UnloadTexture(mTexture); }
 
 
 void Entity::animate(float deltaTime) {
-    if (mAnimationIndices.empty()) return;
-    mAnimationIndices = mAnimationAtlas.at(mDirection);
 
+    if (mAnimation == WALK) {
+        mAnimationIndices = mWalkAnimationAtlas.at(mDirection);
+    }else if (mAnimation == ATTACK) {
+        mAnimationIndices = mAttackAnimationAtlas.at(mDirection);
+    }
+    if (mAnimationIndices.empty()) return;
     mAnimationTime += deltaTime;
     float secondsPerFrame = 1.0f / mFrameSpeed;
 
@@ -53,13 +59,20 @@ void Entity::animate(float deltaTime) {
         mAnimationTime = 0.0f;
 
         mCurrentFrameIndex++;
-        mCurrentFrameIndex %= mAnimationIndices.size();
+        if (mCurrentFrameIndex >= mAnimationIndices.size()) {
+            if (mAnimation == ATTACK) {
+                setAnimation(WALK);
+                return;
+            }
+            else {
+                mCurrentFrameIndex = 0;
+            }
+        }
     }
 }
 
 void Entity::render() {
     if (mEntityStatus == INACTIVE) return;
-    if (mAnimationIndices.empty()) return;
 
     Rectangle textureArea;
 
@@ -113,4 +126,37 @@ void Entity::moveUp() {
 void Entity::moveDown() {
     mVelocity.y += 1.0f;
     mDirection = DOWN;
+}
+
+Direction Entity::getDirection() const {
+    return mDirection;
+}
+
+void Entity::setTexture(const char* textureFilepath) {
+    Texture2D newTexture = LoadTexture(textureFilepath);
+
+    UnloadTexture(mTexture);
+    mTexture = newTexture;
+    mCurrentFrameIndex = 0;
+    mAnimationTime = 0.0f;
+
+}
+
+void Entity::setAnimation(AnimationType animation) {
+    if (mAnimation == animation) return;
+
+    mAnimation = animation;
+    mCurrentFrameIndex = 0;
+    mAnimationTime = 0.0f;
+
+    if (mAnimation == WALK) {
+        mAnimationIndices = mWalkAnimationAtlas.at(mDirection);
+    }
+    else if (mAnimation == ATTACK) {
+        mAnimationIndices = mAttackAnimationAtlas.at(mDirection);
+    }
+}
+
+AnimationType Entity::getAnimation() const {
+    return mAnimation;
 }
