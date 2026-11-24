@@ -5,6 +5,17 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(finalProject
     main.cpp
+        game/game.h
+        game/Game.cpp
+        game/Scene.h
+        game/Scene.cpp
+        entities/Entity.h
+        entities/Entity.cpp
+        game/Map.h
+        entities/Player.h
+        entities/Player.cpp
+        items/Weapon.h
+        items/Weapon.cpp
 )
 
 target_include_directories(finalProject PRIVATE
