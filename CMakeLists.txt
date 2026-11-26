@@ -18,6 +18,10 @@ add_executable(finalProject
         items/Weapon.cpp
         items/item.h
         items/Item.cpp
+        entities/CodingGoblin.h
+        entities/CodingGoblin.cpp
+        entities/Enemy.h
+        entities/Enemy.cpp
 )
 
 target_include_directories(finalProject PRIVATE

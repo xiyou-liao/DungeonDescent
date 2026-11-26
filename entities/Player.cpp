@@ -1,11 +1,14 @@
 #include "Player.h"
 
+using namespace std;
+
 Player::Player(
     Vector2 position,
     Vector2 scale,
+    float maxHealth = 1000.0f,
     const char* textureFilepath = "../assets/player.png",
     Vector2 spriteSheetDimensions = {8, 8}
-): Entity(position, scale, textureFilepath, spriteSheetDimensions,
+): Entity(position, scale, maxHealth, textureFilepath, spriteSheetDimensions,
           {
               {DOWN, {0, 1, 2, 3, 4, 5, 6, 7}},
               {UP, {16, 17, 18, 19, 20, 21, 22, 23}},
@@ -32,7 +35,10 @@ void Player::handleMovement() {
     normalizeVelocity();
 }
 void Player::update(float deltaTime) {
-    handleMovement();
+    if (!isAlive()) return;
+    if (getAnimation() == ATTACK) resetVelocity();
+    else handleMovement();
+
     move(deltaTime);
     animate(deltaTime);
 }
@@ -44,14 +50,50 @@ void Player::equipWeapon(Weapon* weapon) {
     }
 }
 
-void Player::basicAttack() {
-    if (!mWeapon || getAnimation() == ATTACK) return;
+void Player::basicAttack(Enemy* enemy) {
+    if (!mWeapon || !isAlive() || !enemy || !enemy->isAlive() || getAnimation() == ATTACK) return;
+    float distance = GetLength(getPosition() - enemy->getPosition());
 
-    setAnimation(ATTACK);
+    //if (isMouseClickedOnEntity(mousePosition, enemy)) {
+
+        cout << "enemy clicked on" << endl;
+
+        if (distance <= getAttackRange()) {
+            setDirection(enemy->getPosition() - getPosition());
+            resetVelocity(); //stops moving to attack
+            setAnimation(ATTACK);
+
+            enemy->decreaseHealth(getAttackDamage());
+            cout <<"attack registered and enemy health = " << enemy->getHealth() << endl;
+        }
+    //}
+
 }
 
-void Player::handleAttack() {
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        basicAttack();
+void Player::handleAttack(const vector<Enemy*>& enemies) {
+
+    if (!IsMouseButtonDown(MOUSE_BUTTON_LEFT) || !isAlive() || !mWeapon || getAnimation() == ATTACK) return;
+
+
+    Vector2 mousePosition = GetMousePosition();
+
+    for (Enemy* enemy : enemies) {
+      //  cout << "checking enemy" << endl;
+        if (!enemy || !enemy->isAlive()) continue;
+        if (isMouseClickedOnEntity(mousePosition, enemy)) {
+          //  cout << "mouse clicked on entity" << endl;
+            basicAttack(enemy);
+            break;
+        }
     }
+
+}
+
+float Player::getAttackDamage() const {
+    if (mWeapon) return mWeapon->getDamage();
+    return 5.0f;
+}
+float Player::getAttackRange() const {
+    if (mWeapon) return mWeapon->getAttackRange();
+    return 30.0f;
 }

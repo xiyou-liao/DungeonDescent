@@ -11,7 +11,8 @@ public:
      const std::string& name,
      float damage,
      const char* singleTextureFilepath,
-     const char* combinedTextureFilepath
+     const char* combinedTextureFilepath,
+     float attackRange
  ) ;
     void animate(float deltaTime);
     void update(float deltaTime, Direction playerDirection);
@@ -22,9 +23,13 @@ public:
     bool isAttacking() const;
     ~Weapon() override;
     const char* getCombinedTextureFilepath() const;
+
+    float getDamage() const;
+    float getAttackRange() const;
+
 private:
     float mAttackDamage;
-
+    float mAttackRange = 100.0f;
     Vector2 mScale;
 
     Texture2D mSingleTexture;

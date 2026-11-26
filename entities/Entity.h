@@ -5,19 +5,20 @@
 #include "../game/Game.h"
 
 
-enum EntityType {PLAYER};
+
 enum AnimationType {WALK, ATTACK};
 
 class Entity {
 public:
-    // static constexpr int DEFAULT_SIZE = 250;
+     static constexpr int DEFAULT_SIZE = 250;
 
-   // static constexpr float Y_COLLISION_THRESHOLD = 0.5f;
+    static constexpr float Y_COLLISION_THRESHOLD = 0.5f;
 
     Entity();
     Entity(
         Vector2 position,
         Vector2 scale,
+        float maxHealth,
         const char* textureFilepath,
         Vector2 spriteSheetDimensions,
         const std::map<Direction, std::vector<int>>& walkAnimationAtlas,
@@ -32,17 +33,26 @@ public:
     float getHealth() const;
     float getMaxHealth() const;
     Direction getDirection() const;
+    void setDirection(Direction dir);
+    void setDirection(Vector2 dir);
 
     void move(float deltaTime);
   //  void normalizeMovement() { Normalize(&mMovement); }
      void setVelocityDirection(Vector2 direction);
-
+    Vector2 getColliderDimensions() const;
+    bool isActive() const;
     //
     // void determineAnimationDirection(Vector2 direction);
     void moveUp();
     void moveLeft();
     void moveRight();
     void moveDown();
+
+    void displayCollider();
+    void decreaseHealth(float damage);
+
+    bool isMouseClickedOnEntity(Vector2 mousePosition, Entity* entity);
+
     // void resetMovement() { mMovement = { 0.0f, 0.0f }; }
 protected:
     void animate(float deltaTime);
@@ -51,7 +61,7 @@ protected:
     void setAnimation(AnimationType animation);
     void setTexture(const char* textureFilepath);
     AnimationType getAnimation() const;
-
+    void setPosition(Vector2 newPosition);
 private:
     Vector2 mPosition;
     Vector2 mVelocity;
@@ -64,9 +74,8 @@ private:
     const char* mTextureFilePath;
 
     Status mEntityStatus = ACTIVE;
-    // Vector2 mScale;
-    // Vector2 mColliderDimensions;
-    //
+    Vector2 mColliderDimensions;
+
     Texture2D mTexture;
     Vector2 mSpriteSheetDimensions;
 
@@ -86,29 +95,24 @@ private:
     //
     // float mAngle;
     //
-    // bool mIsCollidingTop    = false;
-    // bool mIsCollidingBottom = false;
-    // bool mIsCollidingRight  = false;
-    // bool mIsCollidingLeft   = false;
-    //
-    // EntityType mEntityType;
-    //
-    // bool mTakingDamage = false;
-    // bool isColliding(Entity* other) const;
-    //
-    // void checkCollisionY(const std::vector<Entity*>& collidableEntities);
-    // void checkCollisionY(Map* map);
-    //
-    // void checkCollisionX(const std::vector<Entity*>& collidableEntities);
-    // void checkCollisionX(Map* map);
-    //
-    // void resetColliderFlags() {
-    //     mIsCollidingTop    = false;
-    //     mIsCollidingBottom = false;
-    //     mIsCollidingRight  = false;
-    //     mIsCollidingLeft   = false;
-    // }
-    //
+    bool mIsCollidingTop    = false;
+    bool mIsCollidingBottom = false;
+    bool mIsCollidingRight  = false;
+    bool mIsCollidingLeft   = false;
+
+
+
+    bool mTakingDamage = false;
+    bool isColliding(Entity* other) const;
+
+    void checkCollisionY(const std::vector<Entity*>& collidableEntities);
+    void checkCollisionY(Map* map);
+
+    void checkCollisionX(const std::vector<Entity*>& collidableEntities);
+    void checkCollisionX(Map* map);
+
+    void resetColliderFlags();
+
 
 };
 
